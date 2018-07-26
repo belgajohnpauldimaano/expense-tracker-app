@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 
 class TableContainer extends Component {
     render() {
-        const { headers , data} = this.props
-        console.log(headers, `headers`)
+        const { headers, data } = this.props
         const theadCol = headers.map((h, key) => {
             return <th key={key}>{h}</th>
         })

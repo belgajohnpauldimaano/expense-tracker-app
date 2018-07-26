@@ -1,8 +1,9 @@
-import { EXPENSE_FETCH } from './../actions/index'
+import { EXPENSE_FETCH, EXPENSE_REPORT } from './../actions/index'
 
 
 const defaultState = {
     expenses: [],
+    expenseReport: []
 }
 
 export default (state = defaultState, action) => {
@@ -11,6 +12,11 @@ export default (state = defaultState, action) => {
             return {
                 ...state,
                 expenses: action.payload
+            }
+        case EXPENSE_REPORT:
+            return {
+                ...state,
+                expenseReport: action.payload
             }
         default:
             return state

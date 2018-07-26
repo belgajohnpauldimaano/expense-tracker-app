@@ -5,15 +5,19 @@
   "dependencies": {
     "add": "^2.0.6",
     "axios": "^0.18.0",
+    "chart.js": "^2.7.2",
     "mdbreact": "^4.6.0",
     "react": "^16.4.1",
+    "react-chartjs-2": "^2.7.4",
     "react-dom": "^16.4.1",
+    "react-error-overlay": "^4.0.0",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
+    "salad-ui.chart": "^1.1.55",
     "yarn": "^1.7.0"
   },
   "scripts": {

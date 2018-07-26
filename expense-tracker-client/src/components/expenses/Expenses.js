@@ -3,16 +3,16 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
 import TableContainer from './../uicomponents/tableContainer/TableContainer'
-import { Container, Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'mdbreact'; 
+import { Container, Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'mdbreact';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import DatePicker from 'material-ui/DatePicker';       
+import DatePicker from 'material-ui/DatePicker';
 
-import { fetch_expenses, fetch_categories, save_expense } from './../../actions/index'
+import { fetch_expenses, fetch_categories, save_expense, delete_expense } from './../../actions/index'
 
 class Expenses extends Component {
-    constructor (props) {
+    constructor(props) {
         super(props)
-        
+
         this.state = {
             modal: false,
             isAdding: true,
@@ -38,7 +38,7 @@ class Expenses extends Component {
                     error: ``,
                     required: true
                 },
-                val: {
+                value: {
                     type: `text`,
                     value: ``,
                     label: `Enter`,
@@ -59,12 +59,9 @@ class Expenses extends Component {
             }
         };
     }
-    componentDidMount () {
-        // let datePickerHr = document.querySelector('.datepicker-wrapper').getElementsByTagName('hr')[0];
-        // datePickerHr.style.border = "none";
-
+    componentDidMount() {
         this.props.fetch_categories((cat) => {
-            
+
             const formElements = {
                 ...this.state.formElements
             }
@@ -73,18 +70,16 @@ class Expenses extends Component {
             }
             updatedFormElement.values = cat
             formElements[`category`] = updatedFormElement
-            console.log(updatedFormElement, 'updatedFormElement.value')
             this.setState({ formElements: formElements })
 
         })
         this.props.fetch_expenses()
-        console.log(this.props.category, 'category')
     }
-    
+
 
     toggle = () => {
         this.setState({
-          modal: !this.state.modal
+            modal: !this.state.modal
         });
     }
     handleModalEditButton = (category) => {
@@ -96,7 +91,7 @@ class Expenses extends Component {
                 const updatedFormElement = {
                     ...formElements[key]
                 }
-                
+
                 const val = category[key]
                 updatedFormElement.value = val
                 updatedFormElement.touched = true
@@ -111,23 +106,21 @@ class Expenses extends Component {
             }
         })
         this.setState({
-          modal: !this.state.modal,
-          formElements : formElements,
-          isAdding: false,
-          selectedId: category.id
+            modal: !this.state.modal,
+            formElements: formElements,
+            isAdding: false,
+            selectedId: category.id
         });
     }
     handleFormElementChange = (e) => {
-        console.log(e)
         const i = e.target
-        console.log(i, 'handleFormElementChange')
         const formElements = {
             ...this.state.formElements
         }
         const updatedFormElement = {
             ...formElements[i.name]
         }
-        
+
         const val = i.value
         updatedFormElement.value = val
         updatedFormElement.touched = true
@@ -140,10 +133,10 @@ class Expenses extends Component {
         }
         formElements[i.name] = updatedFormElement
         this.setState({
-          formElements : formElements
+            formElements: formElements
         });
     }
-    handleUsernameSubmit = (e) => {
+    handleFormSubmit = (e) => {
         e.preventDefault()
         const formElements = {
             ...this.state.formElements
@@ -153,38 +146,37 @@ class Expenses extends Component {
             const updatedFormElement = {
                 ...formElements[key]
             }
-                updatedFormElement.touched = true
-                if (updatedFormElement.required && updatedFormElement.value.length < 1) {
-                    updatedFormElement.error = `${key} is required`
-                    updatedFormElement.hasError = true
-                    formValid = false
-                } else {
-                    updatedFormElement.error = ``
-                    updatedFormElement.hasError = false
-                    formValid = true
-                }
-                formElements[key] = updatedFormElement
-                this.setState({formElements : formElements})
-            
+            updatedFormElement.touched = true
+            if (updatedFormElement.required && updatedFormElement.value.length < 1) {
+                updatedFormElement.error = `${key} is required`
+                updatedFormElement.hasError = true
+                formValid = false
+            } else {
+                updatedFormElement.error = ``
+                updatedFormElement.hasError = false
+                formValid = true
+            }
+            formElements[key] = updatedFormElement
+            this.setState({ formElements: formElements })
+
         }
         if (formValid) {
-            console.log(this.state.formElements.category, 'this.state.formElements.category')
             const dataParams = {
-                isAdding : this.state.isAdding,
-                category : {
-                    id : this.state.selectedId,
-                    title : this.state.formElements.title.value,
-                    category : this.state.formElements.category.value,
-                    value : this.state.formElements.val.value,
-                    date : this.state.formElements.date.value,
-                    
+                isAdding: this.state.isAdding,
+                expense: {
+                    id: this.state.selectedId,
+                    title: this.state.formElements.title.value,
+                    category: this.state.formElements.category.value,
+                    value: this.state.formElements.value.value,
+                    date: this.state.formElements.date.value,
+
                 }
             }
-            
+
             const self = this
             this.props.save_expense(dataParams, () => {
                 self.props.fetch_expenses()
-                
+
                 const formElements = {
                     ...self.state.formElements
                 }
@@ -199,24 +191,23 @@ class Expenses extends Component {
                     updatedFormElement.value = ``
                     formElements[key] = updatedFormElement
                 }
-                self.setState({ modal: !this.state.modal, formElements : formElements})
-            })        
+                self.setState({ modal: !this.state.modal, formElements: formElements })
+            })
         }
     }
     handleDeleteButton = (id) => {
-        // this.props.delete_category(id, () => {
-        //     this.props.fetch_categories()
-        // })
+        this.props.delete_expense(id, () => {
+            this.props.fetch_expenses()
+        })
     }
     handleModalAddButton = () => {
         this.setState({ modal: !this.state.modal, })
     }
     render() {
-        
+
         const { expenses } = this.props
         const { formElements, selectedCatId } = this.state
-        
-        console.log(expenses.expenses, 'expenses')
+
         const formElementsArray = []
         for (let key in formElements) {
             formElementsArray.push({
@@ -225,27 +216,15 @@ class Expenses extends Component {
             })
         }
         const formElementContainer = formElementsArray.map((elem, key) => {
-            // if (elem.config.type === `date`) {
-            //     return (
-            //         <div style={{ marginTop: 10 }}>
-            //         <label htmlFor="">{elem.config.label} {elem.id}</label>
-            //             <MuiThemeProvider>
-            //                 <div className="datepicker-wrapper">
-            //                 <DatePicker onChange={(e) => {console.log(e)}} style={{borderBottom: '1px solid #bdbdbd', height: '3rem'}} name={elem.id} id="datepicker" textFieldStyle={{width: '100%'}} hintText="Selected date" ></DatePicker>
-            //                 </div>
-            //     </MuiThemeProvider>
-            //     </div>
-            //     )
-            // }
             if (elem.config.type === `select`) {
-                console.log(elem.config, 'elem.config')
                 const selectValues = elem.config.values.map((s, i) => {
-                    return <option value={s.id} defaultValue={selectedCatId == s.id ? `selected` : ``}>{s.title}</option>
+                    return <option key={i} value={s.id} defaultValue={selectedCatId == s.id ? `selected` : ``}>{s.title}</option>
                 })
                 return (
                     <div key={key} style={{ marginTop: 10 }}>
                         <label htmlFor="">{elem.config.label} {elem.id}</label>
                         <select type={elem.config.type} name={elem.id} value={elem.config.value} onChange={this.handleFormElementChange} placeholder={`${elem.config.label} ${elem.id}`} className="form-control">
+                            <option value={0} >Select Category</option>
                             {selectValues}
                         </select>
                         {elem.config.required && elem.config.touched && elem.config.hasError ? <span>
@@ -272,7 +251,7 @@ class Expenses extends Component {
                     <td>{c.date}</td>
                     <td>{c.value}</td>
                     <td>
-                        <Button  onClick={() => this.handleModalEditButton(c)} size="sm" color="primary">Edit</Button>
+                        {/* <Button onClick={() => this.handleModalEditButton(c)} size="sm" color="primary">Edit</Button> */}
                         <Button onClick={() => this.handleDeleteButton(c.id)} size="sm" color="danger">Delete</Button>
                     </td>
                 </tr>
@@ -281,15 +260,15 @@ class Expenses extends Component {
 
         return (
             <div>
-                
+
                 <h1>Expenses</h1>
                 <Button size="sm" onClick={this.handleModalAddButton} color="primary">Add</Button>
                 <TableContainer headers={[`Title`, `Description`, `Date`, `Value`, `Actions`]} data={expensesList} />
                 <Modal isOpen={this.state.modal} toggle={this.toggle}>
-                    <form onSubmit={this.handleUsernameSubmit}>
+                    <form onSubmit={this.handleFormSubmit}>
                         <ModalHeader toggle={this.toggle}>Expenses</ModalHeader>
                         <ModalBody>
-                                {formElementContainer}
+                            {formElementContainer}
                         </ModalBody>
                         <ModalFooter>
                             <Button color="secondary" type="submit">Save</Button>{' '}
@@ -308,4 +287,4 @@ const mapStateToProps = (state) => {
         category: state.category
     }
 }
-export default withRouter(connect(mapStateToProps, {fetch_expenses, fetch_categories, save_expense})(Expenses));
+export default withRouter(connect(mapStateToProps, { fetch_expenses, fetch_categories, save_expense, delete_expense })(Expenses));

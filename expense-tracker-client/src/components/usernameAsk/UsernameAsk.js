@@ -6,14 +6,14 @@ import { register_user } from './../../actions/index'
 
 import { withRouter } from 'react-router-dom'
 class UsernameAsk extends Component {
-    constructor (props) {
+    constructor(props) {
         super(props)
         this.state = {
             formElement: {
-                username: {
+                name: {
                     type: `text`,
                     value: ``,
-                    label: `Enter username`,
+                    label: `Enter name`,
                     touched: false,
                     hasError: true,
                     error: ``,
@@ -42,7 +42,7 @@ class UsernameAsk extends Component {
             updatedFormElement.hasError = false
         }
         formElements[input.name] = updatedFormElement
-        this.setState({formElement : formElements})
+        this.setState({ formElement: formElements })
     }
     handleUsernameSubmit = (e) => {
         e.preventDefault()
@@ -66,10 +66,10 @@ class UsernameAsk extends Component {
                 formValid = true
             }
             formElements[key] = updatedFormElement
-            this.setState({formElement : formElements})
+            this.setState({ formElement: formElements })
         }
         if (formValid) {
-            this.props.register_user({un : formElement.username.text})        
+            this.props.register_user({ un: formElement.name.value })
         }
     }
     render() {
@@ -98,8 +98,7 @@ class UsernameAsk extends Component {
         }
         return (
             <div className="container">
-                <h1>Expense Tracker</h1>  
-                {userData.status}
+                <h1>Expense Tracker</h1>
                 <form onSubmit={this.handleUsernameSubmit}>
                     <div>
                         {formElementContainer}
