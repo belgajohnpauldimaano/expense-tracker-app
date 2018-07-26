@@ -2,6 +2,11 @@
 
 Clone the repository 
 
+To import database use the expensetracker_db.sql file
+
+create database expensetracker_db
+
+
 It has two folders for server and client
 
 install dependencies and run
@@ -21,3 +26,5 @@ for server goto floder and run npm install
 to run the server go to folder and use node bin/www
 
 the server runs on port 3003
+
+
